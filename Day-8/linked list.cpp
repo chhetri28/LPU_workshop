@@ -1,377 +1,318 @@
 #include<bits/stdc++.h>
 using namespace std;
+#define OJ \
+    freopen("input.txt", "r", stdin); \
+    freopen("output.txt", "w", stdout);
+#define FIO ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
 
-struct node {
-	int val;
-	node* nxt;
-	node(int val) {
-		this->val = val;
-		nxt = NULL;
-	}
+class Node{
+    public:
+    int data;
+    Node*next;
+    Node(int d){
+        data=d;
+        next=NULL;
+    }
 };
-
-node* create_a_ll_1() {
-	node *head = NULL, *last = NULL;
-
-	while (1) {
-		int x;
-		cin >> x;
-		if (x == -1) return head;
-
-		if (last == NULL) {
-			// first node
-			// head node
-			node* cur = new node(x);
-			head = cur;
-			last = cur;
-		}
-		else {
-			// not the first
-			node* cur = new node(x);
-			last->nxt = cur;
-			last = cur;
-		}
-	}
-	return head;
+int length(Node*head){
+    int cnt(0);
+    Node* curr=head;
+    while(curr!=NULL){
+        curr=curr->next;
+        cnt++;
+    }
+    return cnt;
+}
+// returning node using reference 
+void insertinhead(Node*&head,int data){
+    if(head==NULL){
+        head=new Node(data);
+        return;
+    }
+    Node* n=new Node(data);
+    n->next=head;
+    head=n;
+}
+void insertintail(Node*&head,int data){
+    if(head==NULL){
+        Node* n=new Node(data);
+    }
+    Node*curr=head;
+    while(curr->next!=NULL){
+        curr=curr->next;
+    }
+    curr->next=new Node(data);
+}
+void insertinmiddle(Node*&head,int data,int p){
+    if(p==0 || head ==NULL){
+        insertinhead(head,data);
+        return;
+    }
+    else if(p>length(head)){
+        insertintail(head,data);
+    }
+    else{
+        int jump=1;
+        Node* curr=head;
+        while(jump<=p-1){
+            curr=curr->next;
+            jump++;
+        }
+        Node* n=new Node(data);
+        n->next=curr->next;
+        curr->next=n;
+    }
+    return;
+}
+Node *sortedInsert(Node* head, int data) {
+    //1 Check if the list is empty
+    if(head == NULL)
+    {
+        head = new Node(data);
+    }
+    //2 if data is smaller then the first value
+    if(data <= head->data)
+    {
+        Node *temp = new Node(data);
+        temp->next = head;
+        head = temp;
+        
+        return head;
+    }
+    //3 or add in middle
+    Node *curr = head->next, *prev = head;
+    while(curr != NULL)
+    {
+        if(curr->data > data)
+        {
+            Node *temp = new Node(data);
+            
+            temp->next = curr;
+            prev->next = temp;
+            
+            return head;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+    
+    prev->next = new Node(data);
+    return head;
 }
 
-node* create_a_ll_n() {
-	node *head = NULL, *last = NULL;
-	int n;
-	cin >> n;
-
-	while (n--) {
-		int x;
-		cin >> x;
-
-		if (last == NULL) {
-			// first node
-			// head node
-			node* cur = new node(x);
-			head = cur;
-			last = cur;
-		}
-		else {
-			// not the first
-			node* cur = new node(x);
-			last->nxt = cur;
-			last = cur;
-		}
-	}
-	return head;
+Node* take_input(){
+    Node*head=NULL;
+    int n;
+    cin>>n;
+    int data;
+    for(int i=0;i<n;i++){
+        cin>>data;
+        insertinhead(head,data);
+    }
+    return head;
 }
-
-void print_ll(node* head) {
-	node* cur = head;
-	while (cur != NULL) {
-		cout << cur->val << " ";
-		cur = cur->nxt;
-	}
-	cout << '\n';
+void printll(Node* head){
+    Node*temp=head;
+    while(temp!=NULL){
+        cout<<temp->data<<" ";
+        temp=temp->next;
+    }
+    cout<<'\n';
 }
-
-int find_length(node* head) {
-	node* cur = head;
-	int len = 0;
-	while (cur != NULL) {
-		len++;
-		cur = cur->nxt;
-	}
-	return len;
+Node* creatll(){
+    int n;
+    cin>>n;
+    Node* head=NULL,*tail=NULL;
+    while (n--)
+    {
+        /* code */
+        int x;
+        cin>>x;
+        if(head==NULL){
+            Node* curr=new Node(x);
+            head=curr;
+            tail=curr;
+        }
+        else{
+            Node*curr=new Node(x);
+            tail->next=curr;
+            tail=curr;  
+        }
+    }
+    return head;
 }
-
-node* reverse_ll(node* head) {
-	node* cur = head;
-	node* prev = NULL;
-
-	while (cur != NULL) {
-		node *ahead = cur->nxt;
-		cur->nxt = prev;
-		prev = cur;
-		cur = ahead;
-	}
-
-	return prev;
+Node* rotate(Node* head,int k){
+    if(k==0)return head;
+    Node* curr=head,*prev=NULL;
+    while(k--){
+        prev=curr;
+        curr=curr->next;
+    }
+    prev->next=NULL;
+    Node* curr1=curr;
+    while(curr1->next!=NULL){
+        curr1=curr1->next;
+    }
+    curr1->next=head;
+    return curr;
 }
-
-node* reverse_ll_recursive(node* cur, node *prev) {
-	node* ahead = cur->nxt;
-	cur->nxt = prev;
-	if (ahead == NULL) return cur;
-	return reverse_ll_recursive(ahead, cur);
+Node* midpoint(Node*head){
+    if(head==NULL and head->next!=NULL){
+        return head;
+    }
+    Node*slow=head;
+    Node*fast=head->next;
+    while(fast!=NULL and fast->next!=NULL){
+        fast=fast->next->next;
+        slow=slow->next;
+    }
+    return slow;
 }
-
-node* reverse_ll_recursive(node* cur) {
-	// think
+Node* kthnodeend(Node* head,int k){
+    if(head==NULL and head->next!=NULL){
+        return head;
+    }
+    Node*slow=head;
+    Node*fast=head;
+    while(k--){
+        fast=fast->next;
+    }
+    while(fast!=NULL and fast->next!=NULL){
+        fast=fast->next;
+        slow=slow->next;
+    }
+    return slow;
 }
-
-node* delete_at_kth_pos(node* head, int k) {
-
-	node* cur = head, *prev = NULL;
-
-	if (k == 1) return cur->nxt;
-
-	k--;
-	while (k--) {
-		prev = cur;
-		cur = cur->nxt;
-	}
-	// cur is on the kth node
-	prev->nxt = cur->nxt;
-	delete cur;
-	return head;
+Node* reversell(Node* head){
+    Node*curr=head;//Current node
+    Node*prev=NULL;//Prev node
+    Node*n;//next node
+    while(curr!=NULL){//loop till the NULL
+        n=curr->next;//Store the address of next node
+        curr->next=prev;//change the pointer to prev
+        prev=curr;//mark the curr node as prev
+        curr=n;// and curr as next
+    }
+    return prev;//return prev which is now new head 
 }
-
-node* delete_at_head(node *head) {
-	return delete_at_kth_pos(head, 1);
+Node* reverse_recc(Node* head){
+    if(head!=NULL and head->next!=NULL){
+        return head;
+    }
+    Node* rest_head=reverse_recc(head->next);
+    Node* rest_tail=head->next;
+    rest_tail->next=head;
+    head->next=NULL;
+    return rest_head;
 }
-
-node* delete_at_tail(node *head) {
-	return delete_at_kth_pos(head, find_length(head));
+Node* reverseingroup(Node* head,int k){
+    Node*current=head;
+    Node*prev=NULL;
+    Node*nxt;
+    int c(0);
+    while(current!=NULL and c<k){
+        nxt=current->next;
+        current->next=prev;
+        prev=current;
+        current=nxt;
+        c++;
+    }
+    if(nxt!=NULL){
+        head->next=reverseingroup(nxt,k);
+    }
+    return prev;
 }
-
-node* insert_at_head(node* head, int x) {
-	node *cur = new node(x);
-	cur->nxt = head;
-	return cur;
+bool isPalindrome1(Node*head){
+    stack<int>st;
+    Node*slow=head;
+    while(slow!=NULL){
+        st.push(slow->data);
+        slow=slow->next;
+    }
+    auto curr=head;
+    while(curr!=NULL){
+        int i=st.top();
+        st.pop();
+        if(curr->data!=i){
+            return false;
+        }
+    }
+    return true;
 }
-
-node* insert_at_tail(node* head, int x) {
-	node *cur = head;
-	while (cur->nxt != NULL) {
-		cur = cur->nxt;
-	}
-	// cur is pointing to the last node
-	node* temp = new node(x);
-	cur->nxt = temp;
-	return head;
+bool isPalindrome2(Node* head){
+    //1. Find the mid-point
+    Node *fast=head;
+    Node *slow=head;
+    while(fast and fast->next){
+        fast=fast->next->next;
+        slow=slow->next;
+    }
+    if(fast){
+        slow=slow->next;
+    }
+    //2. Reverse the second half
+    Node *dummy=slow;
+    Node *last=NULL;
+    Node *nxt=NULL;
+    while(dummy){
+        nxt=dummy->next;
+        dummy->next=last;
+        last=dummy;
+        dummy=nxt;
+    }
+    //3. Compare each half
+    dummy=last;
+    while(dummy){
+        if(dummy->data==head->data){
+            dummy=dummy->next;
+            head=head->next;
+        }else{
+            return false;
+        }
+    }
+    return true;
 }
-
-// 0-based index
-node* insert_at_k(node* head, int k, int x) {
-	// if k is negative
-	// overflow of k
-	k = max(k, 0);
-	k = min(k, find_length(head));
-
-	if (k == 0) {
-		// insert at head
-		return insert_at_head(head, x);
-	}
-	else if (k == find_length(head)) {
-		// insert at tail
-		return insert_at_tail(head, x);
-	}
-	else {
-		node* cur = head;
-		k--;
-		while (k--) {
-			cur = cur->nxt;
-		}
-		node *temp = new node(x);
-		temp->nxt = cur->nxt;
-		cur->nxt = temp;
-		return head;
-	}
+Node* reversebetween(Node*head,int m,int n){
+    Node*dummy=new Node(0);
+    Node *pre=dummy,*curr;
+    dummy->next=head;
+    for(int i=0;i<m-1;i++){
+        pre=pre->next;
+    }
+    curr=pre->next;
+    for(int i=0;i<n-m;i++){
+        Node *temp=pre->next;//a
+        pre->next=curr->next;//b
+        curr->next=curr->next->next;//c
+        pre->next->next=temp;//d
+    }
+    return dummy->next;
 }
-
-node* merge_two_ll_into_new_ll(node* head1, node* head2) {
-
-	node *cur1 = head1;
-	node *cur2 = head2;
-	node *head3 = NULL;
-	node *last = NULL;
-
-	while (cur1 != NULL && cur2 != NULL) {
-		if (cur1->val <= cur2->val) {
-			node* temp = new node(cur1->val);
-			if (last == NULL) head3 = temp, last = temp;
-			else last->nxt = temp, last = temp;
-			cur1 = cur1->nxt;
-		}
-		else {
-			node* temp = new node(cur2->val);
-			if (last == NULL) head3 = temp, last = temp;
-			else last->nxt = temp, last = temp;
-			cur2 = cur2->nxt;
-		}
-	}
-
-	while (cur1 != NULL) {
-		node* temp = new node(cur1->val);
-		if (last == NULL) head3 = temp, last = temp;
-		else last->nxt = temp, last = temp;
-		cur1 = cur1->nxt;
-	}
-
-	while (cur2 != NULL) {
-		node* temp = new node(cur2->val);
-		if (last == NULL) head3 = temp, last = temp;
-		else last->nxt = temp, last = temp;
-		cur2 = cur2->nxt;
-	}
-
-	return head3;
-}
-
-node* merge_two_ll_recursive(node *head1, node *head2) {
-
-	if (head1 == NULL) return head2;
-	if (head2 == NULL) return head1;
-
-	if (head1->val <= head2->val) {
-		head1->nxt = merge_two_ll_recursive(head1->nxt, head2);
-		return head1;
-	}
-	else {
-		head2->nxt = merge_two_ll_recursive(head1, head2->nxt);
-		return head2;
-	}
-}
-
-// bubble sort
-// selection
-// insertion
-
-node* kth_node_from_end(node *head, int k) {
-	node *p1 = head;
-	node *p2 = head;
-	while (k--) {
-		p2 = p2->nxt;
-	}
-	while (p2 != NULL) {
-		p1 = p1->nxt;
-		p2 = p2->nxt;
-	}
-	return p1;
-}
-
-node* middle(node *head) {
-	node* slow = head;
-	node* fast = head;
-
-	while (slow && fast && fast->nxt && fast->nxt->nxt) {
-		slow = slow->nxt;
-		fast = fast->nxt->nxt;
-	}
-	return slow;
-}
-
-node* merge_sort(node* head) {
-
-	if (head == NULL || head->nxt == NULL) return head;
-
-	node* mid_node = middle(head);
-
-	// a is left and b is right
-	node *a = head;
-	node *b = mid_node->nxt;
-	mid_node->nxt = NULL;
-
-	// mergesort a abd b recursively
-	a = merge_sort(a);
-	b = merge_sort(b);
-
-	head = merge_two_ll_recursive(a, b);
-
-	return head;
-}
-
-bool is_cycle(node *head) {
-
-	node* slow = head;
-	node* fast = head;
-
-	while (fast && fast->nxt) {
-		slow = slow->nxt;
-		fast = fast->nxt->nxt;
-		if (slow == fast) return true;
-	}
-
-	return false;
-}
-
-node* point_of_cycle(node *head) {
-
-	node* slow = head;
-	node* fast = head;
-
-	while (1) {
-		slow = slow->nxt;
-		fast = fast->nxt->nxt;
-		if (slow == fast) break;
-	}
-
-	slow = head;
-
-	while (1) {
-		slow = slow->nxt;
-		fast = fast->nxt;
-		if (slow == fast) return slow;
-	}
-
-}
-
-node* rotate(node *head, int k) {
-	// 0-based index
-	if (k == 0) return head;
-	node *cur = head, *prev = NULL;
-
-	while (k--) {
-		prev = cur;
-		cur = cur->nxt;
-	}
-
-	// prev and cur nodes
-	prev->nxt = NULL;
-	// prev is the new tail
-
-	node *cur1 = cur;
-	while (cur1->nxt != NULL) {
-		cur1 = cur1->nxt;
-	}
-
-	// cur1 is now at the last node
-	cur1->nxt = head;
-
-	// cur is the new head
-	return cur;
-}
-
-
-
-int main() {
-
-#ifndef ONLINE_JUDGE
-	freopen("input.txt", "r", stdin);
-	freopen("output.txt", "w", stdout);
-#endif
-
-	// code
-	node* head = create_a_ll_n();
-	print_ll(head);
-	// head = reverse_ll_recursive(head, NULL);
-
-	// head = delete_at_kth_pos(head, 2);
-
-	// head = insert_at_k(head, 2, 10);
-	// head = insert_at_k(head, 0, 50);
-	// head = insert_at_tail(head, 100);
-	// print_ll(head);
-
-	// node *head1 = create_a_ll_n();
-	// node *head2 = create_a_ll_n();
-
-	// node *head3 = merge_two_ll_into_new_ll(head1, head2);
-
-	// head1 = merge_two_ll_recursive(head1, head2);
-
-	// head = merge_sort(head);
-
-	head = rotate(head, 2);
-
-	print_ll(head);
-
-
-
+int main(){
+    OJ;
+    FIO;
+    // Node*head=take_input();
+    // insertintail(head,6);
+    // insertinmiddle(head,8,2);
+    Node* head=creatll();
+    //head=sortedInsert(head,3);
+    //head=reversebetween(head,2,5);
+    // if(isPalindrome2(head)){
+    //     cout<<"YES";
+    // }
+    // else{
+    //     cout<<"NO";
+    // }
+    //head=reversell(head);
+    //head=reverse_recc(head);
+    //head=reverseingroup(head,5);
+    printll(head);
+    //head=reversell(head);
+    //head=rotate(head,2);
+    // head=midpoint(head);
+    // cout<<head->data<<" ";
+    // head=kthnodeend(head,3);
+    // cout<<head->data<<" ";
+    //printll(head);
+    //cout<<length(head);
 }
