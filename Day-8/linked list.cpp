@@ -156,7 +156,7 @@ Node* rotate(Node* head,int k){
     curr1->next=head;
     return curr;
 }
-Node* midpoint(Node*head){
+Node*  point(Node*head){
     if(head==NULL and head->next!=NULL){
         return head;
     }
